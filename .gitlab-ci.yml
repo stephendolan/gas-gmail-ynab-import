@@ -12,3 +12,4 @@ deploy_master:
   script:
     - echo $CREDENTIALS > ~/.clasprc.json
     - clasp push
+    - clasp run setProperties --params $USER_PROPERTIES

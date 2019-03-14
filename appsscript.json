@@ -1,6 +1,12 @@
 {
   "timeZone": "America/New_York",
-  "dependencies": {
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "executionApi": {
+    "access": "ANYONE"
   },
-  "exceptionLogging": "STACKDRIVER"
+  "oauthScopes": [
+    "https://mail.google.com/",
+    "https://www.googleapis.com/auth/script.external_request"
+  ]
 }
