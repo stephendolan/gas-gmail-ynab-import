@@ -1,0 +1,14 @@
+---
+image: node:latest
+
+before_script:
+  - yarn global add @google/clasp
+
+deploy_master:
+  stage: deploy
+  only:
+    refs:
+      - master
+  script:
+    - echo $CREDENTIALS > ~/.clasprc.json
+    - clasp push
