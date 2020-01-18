@@ -1,26 +1,24 @@
 // Convert a float number to YNAB's weird milliunit format
 //
 // @see https://api.youneedabudget.com/#formats
-function toMilliunit(amount) {
-  var milliunitString = Utilities.formatString("%07.3f", amount);
+function toMilliunit(amount: number): string {
+  let milliunitString = Utilities.formatString("%07.3f", amount);
   milliunitString = milliunitString.replace(/\./g, "");
 
   return milliunitString;
 }
 
 // Send a POST request to the YNAB transactions route
-function sendTransactionToYNAB(amount, payee, memo, accountId) {
-  var budgetId = UserProperties.getProperty("budget_id");
+function sendTransactionToYNAB(amount: number, payee: string, memo: string, accountId: string): void {
+  const budgetId = UserProperties.getProperty("budget_id");
+  const apiToken = UserProperties.getProperty("api_token");
 
-  var apiToken = UserProperties.getProperty("api_token");
-  var baseUrl = "https://api.youneedabudget.com/v1/";
-  var transactionUrl = baseUrl + "budgets/" + budgetId + "/transactions";
+  const baseUrl = "https://api.youneedabudget.com/v1";
+  const transactionUrl = `${baseUrl}/budgets/${budgetId}/transactions`;
 
-  var today = new Date().toISOString();
+  const today = new Date().toISOString();
 
-  Logger.log(accountId);
-
-  var data = {
+  const data = {
     transaction: {
       account_id: accountId,
       date: today,
@@ -33,14 +31,16 @@ function sendTransactionToYNAB(amount, payee, memo, accountId) {
     }
   };
 
-  var headers = {
+  const headers = {
     Authorization: "Bearer " + apiToken
   };
 
-  var options = {
-    method: "post",
+  let method = "post" as const;
+
+  const options = {
     contentType: "application/json",
     headers: headers,
+    method: method,
     payload: JSON.stringify(data)
   };
 
@@ -48,10 +48,10 @@ function sendTransactionToYNAB(amount, payee, memo, accountId) {
 }
 
 // Parse the amount of an Amazon purchase from the confirmation email.
-function parseAmazonPurchaseAmount(message) {
-  var plainBody = message.getPlainBody();
-  var amountRegex = /Order Total: \$(\d+(?:\.\d{2})?)/;
-  var amountMatches = amountRegex.exec(plainBody);
+function parseAmazonPurchaseAmount(message: GoogleAppsScript.Gmail.GmailMessage): string {
+  const plainBody = message.getPlainBody();
+  const amountRegex = /Order Total: \$(\d+(?:\.\d{2})?)/;
+  const amountMatches = amountRegex.exec(plainBody);
 
   if (amountMatches === null) {
     return null;
@@ -65,31 +65,27 @@ function parseAmazonPurchaseAmount(message) {
 // - remove the inbox label
 // - add the processed label
 function processInbox() {
-  var processedLabel = GmailApp.getUserLabelByName(
-    UserProperties.getProperty("processed_label")
-  );
-  var inboxLabel = GmailApp.getUserLabelByName(
-    UserProperties.getProperty("inbox_label")
-  );
+  const processedLabel = GmailApp.getUserLabelByName(UserProperties.getProperty("processed_label"));
+  const inboxLabel = GmailApp.getUserLabelByName(UserProperties.getProperty("inbox_label"));
 
-  inboxLabel.getThreads().forEach(function(thread) {
-    var subject = thread.getFirstMessageSubject();
+  inboxLabel.getThreads().forEach(function (thread) {
+    const subject = thread.getFirstMessageSubject();
 
-    var sentMoneyRegex = /You sent \$(\d+(?:\.\d{2})?) to (?:(.*) for (.*)|(.*))/;
-    var receivedMoneyRegex = /(.*) sent you \$(\d+(?:\.\d{2})?)(?: for (.*))?/;
-    var cashCardPurchaseRegex = /You spent \$(\d+(?:\.\d{2})?) at (?:(.*)\. Your.*|(.*))/;
-    var amazonPurchaseRegex = /Your Amazon.* order of (.*)/;
+    const sentMoneyRegex = /You sent \$(\d+(?:\.\d{2})?) to (?:(.*) for (.*)|(.*))/;
+    const receivedMoneyRegex = /(.*) sent you \$(\d+(?:\.\d{2})?)(?: for (.*))?/;
+    const cashCardPurchaseRegex = /You spent \$(\d+(?:\.\d{2})?) at (?:(.*)\. Your.*|(.*))/;
+    const amazonPurchaseRegex = /Your Amazon.* order of (.*)/;
 
-    var sentMoneyMatches = sentMoneyRegex.exec(subject);
-    var receivedMoneyMatches = receivedMoneyRegex.exec(subject);
-    var cashCardPurchaseMatches = cashCardPurchaseRegex.exec(subject);
-    var amazonPurchaseMatches = amazonPurchaseRegex.exec(subject);
+    const sentMoneyMatches = sentMoneyRegex.exec(subject);
+    const receivedMoneyMatches = receivedMoneyRegex.exec(subject);
+    const cashCardPurchaseMatches = cashCardPurchaseRegex.exec(subject);
+    const amazonPurchaseMatches = amazonPurchaseRegex.exec(subject);
 
-    var amountMultiplier = 1;
-    var memo = "";
-    var payee = "";
-    var amountString = "";
-    var accountId = "";
+    let amountMultiplier = 1;
+    let memo = "";
+    let payee = "";
+    let amountString = "";
+    let accountId = "";
 
     if (sentMoneyMatches !== null) {
       amountMultiplier = -1;
@@ -130,7 +126,7 @@ function processInbox() {
       return null;
     }
 
-    var amount = amountMultiplier * parseFloat(amountString);
+    const amount = amountMultiplier * parseFloat(amountString);
 
     sendTransactionToYNAB(amount, payee, memo, accountId);
 
@@ -141,8 +137,6 @@ function processInbox() {
 }
 
 // The main entrypoint for the script.
-//
-// @author Stephen Dolan
 //
 // @user_property [String] budget_id the ID of the YNAB budget to create transactions within
 // @user_property [String] checking_account_id the ID of the YNAB checking account to create transactions within
