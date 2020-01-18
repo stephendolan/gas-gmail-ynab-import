@@ -1,3 +1,5 @@
+const userProperties = PropertiesService.getUserProperties();
+
 // Convert a float number to YNAB's weird milliunit format
 //
 // @see https://api.youneedabudget.com/#formats
@@ -10,9 +12,9 @@ function toMilliunit(amount: number): string {
 
 // Send a POST request to the YNAB transactions route
 function sendTransactionToYNAB(amount: number, payee: string, memo: string, accountId: string): void {
-  const budgetId = UserProperties.getProperty("budget_id");
-  const categoryId = UserProperties.getProperty("category_id");
-  const apiToken = UserProperties.getProperty("api_token");
+  const budgetId = userProperties.getProperty("budget_id");
+  const categoryId = userProperties.getProperty("category_id");
+  const apiToken = userProperties.getProperty("api_token");
 
   const baseUrl = "https://api.youneedabudget.com/v1";
   const transactionUrl = `${baseUrl}/budgets/${budgetId}/transactions`;
@@ -66,8 +68,8 @@ function parseAmazonPurchaseAmount(message: GoogleAppsScript.Gmail.GmailMessage)
 // - remove the inbox label
 // - add the processed label
 function processInbox() {
-  const processedLabel = GmailApp.getUserLabelByName(UserProperties.getProperty("processed_label"));
-  const inboxLabel = GmailApp.getUserLabelByName(UserProperties.getProperty("inbox_label"));
+  const processedLabel = GmailApp.getUserLabelByName(userProperties.getProperty("processed_label"));
+  const inboxLabel = GmailApp.getUserLabelByName(userProperties.getProperty("inbox_label"));
 
   inboxLabel.getThreads().forEach(function (thread) {
     const subject = thread.getFirstMessageSubject();
@@ -93,24 +95,24 @@ function processInbox() {
       amountString = sentMoneyMatches[1];
       payee = sentMoneyMatches[2] || sentMoneyMatches[4];
       memo = sentMoneyMatches[3] || "No Memo Found";
-      accountId = UserProperties.getProperty("checking_account_id");
+      accountId = userProperties.getProperty("checking_account_id");
     } else if (receivedMoneyMatches !== null) {
       amountMultiplier = 1;
       payee = receivedMoneyMatches[1];
       amountString = receivedMoneyMatches[2];
       memo = receivedMoneyMatches[3] || "No Memo Found";
-      accountId = UserProperties.getProperty("checking_account_id");
+      accountId = userProperties.getProperty("checking_account_id");
     } else if (cashCardPurchaseMatches !== null) {
       amountMultiplier = -1;
       amountString = cashCardPurchaseMatches[1];
       payee = cashCardPurchaseMatches[2];
       memo = "Fill me in!";
-      accountId = UserProperties.getProperty("square_cash_account_id");
+      accountId = userProperties.getProperty("square_cash_account_id");
     } else if (amazonPurchaseMatches !== null) {
       amountMultiplier = -1;
       amountString = parseAmazonPurchaseAmount(thread.getMessages()[0]);
       payee = "Amazon";
-      accountId = UserProperties.getProperty("amazon_visa_account_id");
+      accountId = userProperties.getProperty("amazon_visa_account_id");
       memo = amazonPurchaseMatches[1];
     } else {
       Logger.log("Unable to find a valid regular expression match");
