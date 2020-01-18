@@ -1,5 +1,17 @@
 const userProperties = PropertiesService.getUserProperties();
 
+// This only needs to be modified and replaced for the first run, then should be deleted.
+function setUserProperties(): void {
+  // userProperties.setProperty("inbox_label", "Where to pull Gmail messages from for processing");
+  // userProperties.setProperty("processed_label", "Where to place Gmail messages after processing");
+
+  // userProperties.setProperty("api_token", "Which YNAB API key to use");
+  // userProperties.setProperty("budget_id", "Which YNAB budget to use");
+  // userProperties.setProperty("category_id", "Which YNAB category to use by default");
+  // userProperties.setProperty("checking_account_id", "Which YNAB account represents the checking account");
+  // userProperties.setProperty("square_cash_account_id", "Which YNAB account represents the Square Cash account");
+}
+
 // Convert a float number to YNAB's weird milliunit format
 //
 // @see https://api.youneedabudget.com/#formats
@@ -50,24 +62,11 @@ function sendTransactionToYNAB(amount: number, payee: string, memo: string, acco
   UrlFetchApp.fetch(transactionUrl, options);
 }
 
-// Parse the amount of an Amazon purchase from the confirmation email.
-function parseAmazonPurchaseAmount(message: GoogleAppsScript.Gmail.GmailMessage): string {
-  const plainBody = message.getPlainBody();
-  const amountRegex = /Order Total: \$(\d+(?:\.\d{2})?)/;
-  const amountMatches = amountRegex.exec(plainBody);
-
-  if (amountMatches === null) {
-    return null;
-  }
-
-  return amountMatches[1];
-}
-
 // For every Thread in the inbox label:
 // - send the transaction to YNAB
 // - remove the inbox label
 // - add the processed label
-function processInbox() {
+function processInbox(): void {
   const processedLabel = GmailApp.getUserLabelByName(userProperties.getProperty("processed_label"));
   const inboxLabel = GmailApp.getUserLabelByName(userProperties.getProperty("inbox_label"));
 
@@ -77,12 +76,10 @@ function processInbox() {
     const sentMoneyRegex = /You sent \$(\d+(?:\.\d{2})?) to (?:(.*) for (.*)|(.*))/;
     const receivedMoneyRegex = /(.*) sent you \$(\d+(?:\.\d{2})?)(?: for (.*))?/;
     const cashCardPurchaseRegex = /You spent \$(\d+(?:\.\d{2})?) at (?:(.*)\. Your.*|(.*))/;
-    const amazonPurchaseRegex = /Your Amazon.* order of (.*)/;
 
     const sentMoneyMatches = sentMoneyRegex.exec(subject);
     const receivedMoneyMatches = receivedMoneyRegex.exec(subject);
     const cashCardPurchaseMatches = cashCardPurchaseRegex.exec(subject);
-    const amazonPurchaseMatches = amazonPurchaseRegex.exec(subject);
 
     let amountMultiplier = 1;
     let memo = "";
@@ -108,12 +105,6 @@ function processInbox() {
       payee = cashCardPurchaseMatches[2];
       memo = "Fill me in!";
       accountId = userProperties.getProperty("square_cash_account_id");
-    } else if (amazonPurchaseMatches !== null) {
-      amountMultiplier = -1;
-      amountString = parseAmazonPurchaseAmount(thread.getMessages()[0]);
-      payee = "Amazon";
-      accountId = userProperties.getProperty("amazon_visa_account_id");
-      memo = amazonPurchaseMatches[1];
     } else {
       Logger.log("Unable to find a valid regular expression match");
       Logger.log(subject);
@@ -140,13 +131,7 @@ function processInbox() {
 }
 
 // The main entrypoint for the script.
-//
-// @user_property [String] budget_id the ID of the YNAB budget to create transactions within
-// @user_property [String] checking_account_id the ID of the YNAB checking account to create transactions within
-// @user_property [String] square_cash_account_id the ID of the YNAB Square Cash Card account to create transactions within
-// @user_property [String] api_key the YNAB API key for authenticating requests, acquired from https://api.youneedabudget.com
-// @user_property [String] inbox_label the label to retrieve unprocessed Cash emails from
-// @user_property [String] processed_label the label to send processed Cash emails to
-function main() {
+function main(): void {
+  setUserProperties();
   processInbox();
 }
