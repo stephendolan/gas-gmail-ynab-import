@@ -1,9 +1,6 @@
 ---
 image: stephendolan/gas_deployment:latest
 
-before_script:
-  - yarn global add @google/clasp
-
 deploy_master:
   stage: deploy
   only:
