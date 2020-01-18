@@ -11,6 +11,7 @@ function toMilliunit(amount: number): string {
 // Send a POST request to the YNAB transactions route
 function sendTransactionToYNAB(amount: number, payee: string, memo: string, accountId: string): void {
   const budgetId = UserProperties.getProperty("budget_id");
+  const categoryId = UserProperties.getProperty("category_id");
   const apiToken = UserProperties.getProperty("api_token");
 
   const baseUrl = "https://api.youneedabudget.com/v1";
@@ -25,7 +26,7 @@ function sendTransactionToYNAB(amount: number, payee: string, memo: string, acco
       amount: toMilliunit(amount),
       payee_name: payee,
       memo: memo,
-      category: null,
+      category_id: categoryId,
       cleared: "uncleared",
       flag_color: "green"
     }
