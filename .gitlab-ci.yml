@@ -1,5 +1,5 @@
 ---
-image: node:latest
+image: stephendolan/gas_deployment:latest
 
 before_script:
   - yarn global add @google/clasp
