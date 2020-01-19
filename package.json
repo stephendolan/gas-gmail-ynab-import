@@ -1,5 +1,9 @@
 {
+  "private": true,
   "devDependencies": {
     "@types/google-apps-script": "^1.0.9"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }

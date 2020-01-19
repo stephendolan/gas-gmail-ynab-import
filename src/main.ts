@@ -4,7 +4,6 @@ const userProperties = PropertiesService.getUserProperties();
 function setUserProperties(): void {
   // userProperties.setProperty("inbox_label", "Where to pull Gmail messages from for processing");
   // userProperties.setProperty("processed_label", "Where to place Gmail messages after processing");
-
   // userProperties.setProperty("api_token", "Which YNAB API key to use");
   // userProperties.setProperty("budget_id", "Which YNAB budget to use");
   // userProperties.setProperty("category_id", "Which YNAB category to use by default");
@@ -70,7 +69,7 @@ function processInbox(): void {
   const processedLabel = GmailApp.getUserLabelByName(userProperties.getProperty("processed_label"));
   const inboxLabel = GmailApp.getUserLabelByName(userProperties.getProperty("inbox_label"));
 
-  inboxLabel.getThreads().forEach(function (thread) {
+  inboxLabel.getThreads().forEach(thread => {
     const subject = thread.getFirstMessageSubject();
 
     const sentMoneyRegex = /You sent \$(\d+(?:\.\d{2})?) to (?:(.*) for (.*)|(.*))/;
@@ -111,12 +110,7 @@ function processInbox(): void {
       return null;
     }
 
-    if (
-      accountId === null ||
-      amountString === null ||
-      payee === null ||
-      memo === null
-    ) {
+    if (accountId === null || amountString === null || payee === null || memo === null) {
       return null;
     }
 
