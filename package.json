@@ -1,7 +1,11 @@
 {
   "private": true,
+  "scripts": {
+    "test": "ava"
+  },
   "devDependencies": {
-    "@types/google-apps-script": "^1.0.9"
+    "@types/google-apps-script": "^1.0.9",
+    "ava": "^3.0.0"
   },
   "prettier": {
     "printWidth": 120
