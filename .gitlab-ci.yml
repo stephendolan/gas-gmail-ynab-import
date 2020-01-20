@@ -7,7 +7,7 @@ deploy_master:
     refs:
       - master
   script:
-    - yarn install && yarn run test
+    - yarn run test
     - echo $CREDENTIALS > ~/.clasprc.json
     - clasp push
     - clasp deploy
