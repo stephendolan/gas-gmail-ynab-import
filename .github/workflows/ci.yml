@@ -27,6 +27,3 @@ jobs:
 
       - name: Push Clasp project changes
         run: clasp push
-
-      - name: Deploy Clasp project
-        run: clasp deploy --versionNumber main
