@@ -20,7 +20,10 @@ jobs:
         run: npm install
 
       - name: Create credentials
-        run: echo ${{ secrets.CREDENTIALS }} > ~/.clasprc.json
+        run: echo "$CREDENTIALS" > ~/.clasprc.json
+        shell: bash
+        env:
+          CREDENTIALS: ${{secrets.CREDENTIALS}}
 
       - name: Push Clasp project changes
         run: clasp push
