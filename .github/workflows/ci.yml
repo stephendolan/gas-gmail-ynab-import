@@ -1,0 +1,29 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test_and_deploy:
+    name: Test and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: Install prerequisites
+        run: npm install -g @google/clasp ava
+
+      - name: Install packages
+        run: npn install
+
+      - name: Create credentials
+        run: echo ${{ secrets.CREDENTIALS }} > ~/.clasprc.json
+
+      - name: Push Clasp project changes
+        run: clasp push
+
+      - name: Deploy Clasp project
+        run: clasp deploy
