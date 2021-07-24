@@ -17,7 +17,7 @@ jobs:
         run: npm install -g @google/clasp ava
 
       - name: Install packages
-        run: npn install
+        run: npm install
 
       - name: Create credentials
         run: echo ${{ secrets.CREDENTIALS }} > ~/.clasprc.json
