@@ -26,4 +26,4 @@ jobs:
           CREDENTIALS: ${{secrets.CREDENTIALS}}
 
       - name: Push Clasp project changes
-        run: clasp push
+        run: clasp push --force
