@@ -29,4 +29,4 @@ jobs:
         run: clasp push
 
       - name: Deploy Clasp project
-        run: clasp deploy
+        run: clasp deploy --versionNumber main
