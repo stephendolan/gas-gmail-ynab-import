@@ -1,9 +1,7 @@
-name: Test and Deploy
+name: Test
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -13,17 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
 
-      - name: Install prerequisites
-        run: npm install -g @google/clasp ava
-
       - name: Install packages
         run: npm install
-
-      - name: Create credentials
-        run: echo "$CREDENTIALS" > ~/.clasprc.json
-        shell: bash
-        env:
-          CREDENTIALS: ${{secrets.CREDENTIALS}}
-
-      - name: Push Clasp project changes
-        run: clasp push --force
+        
+      - name: Run tests
+        run: yarn run test
