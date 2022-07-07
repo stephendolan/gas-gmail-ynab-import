@@ -4,7 +4,7 @@
     "test": "ava"
   },
   "devDependencies": {
-    "@types/google-apps-script": "^1.0.50",
+    "@types/google-apps-script": "^1.0.51",
     "ava": "^4.3.0"
   },
   "prettier": {
